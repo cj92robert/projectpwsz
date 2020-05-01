@@ -19,6 +19,16 @@ public class Film {
     this.nazwaStudia = nazwaStudia;
   }
 
+  public Film(String tytul, String rok, long czasTrwania, String gatunek, String nazwaStudia) {
+    this.tytul = tytul;
+    this.rok = rok;
+    this.czasTrwania = czasTrwania;
+    this.gatunek = gatunek;
+    this.nazwaStudia = nazwaStudia;
+  }
+
+  public Film() {
+  }
 
   public long getId() {
     return id;

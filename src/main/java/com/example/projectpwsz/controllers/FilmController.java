@@ -61,5 +61,10 @@ public class FilmController {
             return new ResponseEntity(HttpStatus.OK);
     }
 
+    @GetMapping("/test")
+    void getTest(){
+        filmDao.save(
+                new Film(1,"testowytytul","1999",1234,"gatunek","jakiestam"));
+    }
 
 }
