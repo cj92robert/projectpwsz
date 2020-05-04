@@ -4,10 +4,11 @@ import com.example.projectpwsz.models.Film;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-
-import java.sql.SQLException;
 import java.util.List;
+
+
 @Repository
 public class FilmDaoImpl implements FilmDao  {
 
@@ -25,19 +26,20 @@ public class FilmDaoImpl implements FilmDao  {
     }
 
     @Override
-    public Film findByID(long id) throws SQLException {
+    public Film findByID(long id)  {
         try {
+            RowMapper<Film> filmRowMapper = (rs, rowNum) ->
+                    new Film(
+                            rs.getLong("id"),
+                            rs.getString("tytul"),
+                            rs.getString("rok"),
+                            rs.getInt(4),
+                            rs.getString(5),
+                            rs.getString(6)
+                    );
             return jdbcTemplate
-                    .queryForObject("SELECT * FROM filmy where id=?",
-                            (rs, rowNum) ->
-                                    new Film(
-                                            rs.getLong("id"),
-                                            rs.getString("tytul"),
-                                            rs.getString("rok"),
-                                            rs.getInt(4),
-                                            rs.getString(5),
-                                            rs.getString(6)
-                                    )
+                    .queryForObject("SELECT * FROM Filmy where id=?",
+                            filmRowMapper
                             , id);
         }catch(EmptyResultDataAccessException e) {
             return null;
@@ -47,31 +49,33 @@ public class FilmDaoImpl implements FilmDao  {
 
     @Override
     public List<Film> findAll() {
+        RowMapper<Film> filmRowMapper = (rs, rowNum) ->
+                new Film(
+                        rs.getLong("id"),
+                        rs.getString("tytul"),
+                        rs.getString("rok"),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        rs.getString(6)
+                );
         return jdbcTemplate
-                .query("SELECT * FROM filmy",
-                        (rs,rowNum)->
-                                new Film(
-                                        rs.getLong("id"),
-                                        rs.getString("tytul"),
-                                        rs.getString("rok"),
-                                        rs.getInt(4),
-                                        rs.getString(5),
-                                        rs.getString(6)
-                                )
+                .query("SELECT * FROM Filmy",
+                        filmRowMapper
                         );
+        
     }
 
     @Override
     public int save(Film film) {
         return jdbcTemplate
-                .update("INSERT INTO filmy (tytul,rok,czas_trwania, gatunek, nazwa_studia) values(?,?,?,?,?) ",
+                .update("INSERT INTO Filmy (tytul,rok,czas_trwania, gatunek, nazwa_studia) values(?,?,?,?,?) ",
                 film.getTytul(),film.getRok(),film.getCzasTrwania(),film.getGatunek(),film.getNazwaStudia());
     }
 
     @Override
     public int update(Film film) {
         return jdbcTemplate
-                .update("UPDATE filmy SET tytul=?,rok=?,czas_trwania=?, gatunek=?, nazwa_studia=? where id=? ",
+                .update("UPDATE Filmy SET tytul=?,rok=?,czas_trwania=?, gatunek=?, nazwa_studia=? where id=? ",
                         film.getTytul(),film.getRok(),film.getCzasTrwania(),
                         film.getGatunek(),film.getNazwaStudia(),film.getId());
     }
@@ -80,7 +84,7 @@ public class FilmDaoImpl implements FilmDao  {
     public int deleteById(Long id) {
         return jdbcTemplate
                 .update(
-                        "DELETE FROM filmy WHERE id=?",
+                        "DELETE FROM Filmy WHERE id=?",
                         id
                 );
     }
